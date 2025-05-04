@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.5;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.5rem;
+      color: #2563eb;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .section {
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.2rem;
+      color: #2563eb;
+      margin-bottom: 0.5rem;
+    }
+    .input-group {
+      margin-bottom: 0.5rem;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    textarea, select, input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .result {
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      background: #fff;
+      border-radius: 4px;
+    }
+    .result p {
+      font-size: 0.9rem;
+    }
+    .error {
+      color: #dc2626;
+    }
+    audio {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .helper {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+      h1 {
+        font-size: 1.25rem;
+      }
+      h2 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HealthAI Assistant</h1>
+
+    <!-- Voice Input -->
+    <div class="section">
+      <h2>Voice Input</h2>
+      <form method="POST" action="/" enctype="multipart/form-data">
+        <input type="hidden" name="diagnosis_type" value="voice">
+        <div class="input-group">
+          <button type="submit">Record Voice</button>
+          <p class="helper">Click to record (up to 10 seconds).</p>
+        </div>
+      </form>
+      {% if diagnosis_type == 'voice' %}
+      <div class="result">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if query %}
+        <p><strong>Said:</strong> {{ query }}</p>
+        {% endif %}
+        {% if result %}
+        <p><strong>Diagnosis:</strong> {{ result }}</p>
+        {% endif %}
+        {% if audio_base64 %}
+        <audio controls src="data:audio/mp3;base64,{{ audio_base64 }}"></audio>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Text Input -->
+    <div class="section">
+      <h2>Text Input</h2>
+      <form method="POST" action="/" enctype="multipart/form-data">
+        <input type="hidden" name="diagnosis_type" value="text">
+        <div class="input-group">
+          <label for="textQuery">Symptoms</label>
+          <textarea id="textQuery" name="text_query" placeholder="E.g., I have a headache...">{{ query if diagnosis_type == 'text' else '' }}</textarea>
+        </div>
+        <div class="input-group">
+          <label for="textLanguage">Language</label>
+          <select id="textLanguage" name="language">
+            <option value="en" {% if diagnosis_type != 'text' %}selected{% endif %}>English</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      {% if diagnosis_type == 'text' %}
+      <div class="result">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if result %}
+        <p><strong>Analysis:</strong> {{ result }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Image Input -->
+    <div class="section">
+      <h2>Image Input</h2>
+      <form method="POST" action="/" enctype="multipart/form-data">
+        <input type="hidden" name="diagnosis_type" value="image">
+        <div class="input-group">
+          <label for="imageInput">Medical Image</label>
+          <input type="file" id="imageInput" name="image" accept="image/jpeg,image/png">
+          <p class="helper">JPEG or PNG, max 5MB</p>
+        </div>
+        <div class="input-group">
+          <label for="imageLanguage">Language</label>
+          <select id="imageLanguage" name="language">
+            <option value="en" {% if diagnosis_type == 'image' %}selected{% endif %}>English</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+        <button type="submit">Analyze</button>
+      </form>
+      {% if diagnosis_type == 'image' %}
+      <div class="result">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if audio_base64 %}
+        <audio controls src="data:audio/mp3;base64,{{ audio_base64 }}"></audio>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
