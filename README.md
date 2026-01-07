@@ -70,9 +70,9 @@ Healthcare-focused AI system design
 
 Configure environment variables
 
-GROQ_API_KEY=your_api_key
-PINECONE_API_KEY=your_api_key
-SUPABASE_URL=your_url
+GROQ_API_KEY=your_api_key\
+PINECONE_API_KEY=your_api_key\
+SUPABASE_URL=your_url\
 SUPABASE_KEY=your_key
 
 
